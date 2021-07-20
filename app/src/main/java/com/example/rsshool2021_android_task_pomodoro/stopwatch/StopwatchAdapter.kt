@@ -14,7 +14,7 @@ class StopwatchAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StopwatchViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = StopwatchItemBinding.inflate(layoutInflater, parent, false)
-        return StopwatchViewHolder(binding, listener, binding.root.context.resources)
+        return StopwatchViewHolder(binding, listener)
     }
 
     override fun onBindViewHolder(holder: StopwatchViewHolder, position: Int) {
@@ -30,7 +30,8 @@ class StopwatchAdapter(
             }
 
             override fun areContentsTheSame(oldItem: Stopwatch, newItem: Stopwatch): Boolean {
-                return oldItem.currentMs == newItem.currentMs &&
+                return oldItem.startPeriod == newItem.startPeriod &&
+                        oldItem.currentMs == newItem.currentMs &&
                         oldItem.isStarted == newItem.isStarted
             }
 

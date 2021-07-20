@@ -6,7 +6,7 @@ interface StopwatchListener {
 
     fun stop(id: Int, currentMs: Long)
 
-    fun reset(id: Int)
+    fun reset(id: Int, startPeriod: Long)
 
     fun delete(id: Int)
 }
