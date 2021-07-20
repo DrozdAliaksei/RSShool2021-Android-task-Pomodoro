@@ -3,6 +3,7 @@ package com.example.rsshool2021_android_task_pomodoro.stopwatch
 import android.content.res.Resources
 import android.graphics.drawable.AnimationDrawable
 import android.os.CountDownTimer
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rsshool2021_android_task_pomodoro.R
@@ -44,7 +45,7 @@ class StopwatchViewHolder(
     }
 
     private fun startTimer(stopwatch: Stopwatch) {
-        val drawable = resources.getDrawable(R.drawable.ic_baseline_pause_24)
+        val drawable = getDrawable(binding.root.context, R.drawable.ic_baseline_pause_24)
         binding.startPauseButton.setImageDrawable(drawable)
 
         timer?.cancel()
@@ -56,7 +57,7 @@ class StopwatchViewHolder(
     }
 
     private fun stopTimer(stopwatch: Stopwatch) {
-        val drawable = resources.getDrawable(R.drawable.ic_baseline_play_arrow_24)
+        val drawable = getDrawable(binding.root.context, R.drawable.ic_baseline_play_arrow_24)
         binding.startPauseButton.setImageDrawable(drawable)
 
         timer?.cancel()
@@ -108,7 +109,8 @@ class StopwatchViewHolder(
         private const val PERIOD = 1000L * 60L * 60L * 24L // Day
 
         private const val INTERVAL = 100L
-//        private const val PERIOD = 1000L * 30 // 30 sec
+
+        //        private const val PERIOD = 1000L * 30 // 30 sec
         private const val REPEAT = 10 // 10 times
 
     }

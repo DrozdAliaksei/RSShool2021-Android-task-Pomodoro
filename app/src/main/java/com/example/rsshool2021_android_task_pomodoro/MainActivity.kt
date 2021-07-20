@@ -18,12 +18,15 @@ class MainActivity : AppCompatActivity(), StopwatchListener {
     private val stopwatchAdapter = StopwatchAdapter(this)
     private val stopwatches = mutableListOf<Stopwatch>()
     private var nextId = 0
+    private var startTime = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        startTime = System.currentTimeMillis()
 
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
