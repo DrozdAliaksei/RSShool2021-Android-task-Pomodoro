@@ -20,7 +20,7 @@ class ForegroundService : Service() {
 
     private val builder by lazy {
         NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Simple Timer")
+            .setContentTitle("Running Timer")
             .setGroup("Timer")
             .setGroupSummary(false)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
