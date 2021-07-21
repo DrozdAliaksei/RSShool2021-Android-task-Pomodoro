@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Pomodoro</string>
     <string name="blinking_indicator">blinking indicator</string>
-    <string name="timer">00:00:00</string>
+    <string name="timer">00:00:00:00</string>
     <string name="start_pause_button">start pause button</string>
     <string name="restart_button">restart button</string>
     <string name="delete_button">delete button</string>

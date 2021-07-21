@@ -57,19 +57,21 @@ class MainActivity : AppCompatActivity(), StopwatchListener, LifecycleObserver {
                 val h = time.subSequence(0, time.indexOf(":")).toString()
                 val m = time.subSequence(time.indexOf(":") + 1, time.length).toString()
                 val mills = (h.toInt() * 60L + m.toInt()) * 60L * 1000L
-                stopwatches.add(Stopwatch(nextId++, mills, mills, false))
-                stopwatchAdapter.submitList(stopwatches.toList())
+                if (stopwatches.size <= 5) {
+                    stopwatches.add(Stopwatch(nextId++, mills, mills, false))
+                    stopwatchAdapter.submitList(stopwatches.toList())
+                } else Toast.makeText(this, "Too many deadlines", Toast.LENGTH_LONG).show()
             } else Toast.makeText(this, "Choose timer period", Toast.LENGTH_LONG).show()
         }
 
         lifecycleScope.launch(Dispatchers.Main) {
-            stopwatches.forEach {
-                if (it.isStarted) {
-                    val interval = System.currentTimeMillis() - startTime
-                    it.currentMs -= interval
-                    changeStopwatch(it.id, it.currentMs, true)
-                }
-            }
+//            stopwatches.forEach {
+//                if (it.isStarted) {
+//                    val interval = System.currentTimeMillis() - startTime
+//                    it.currentMs -= interval
+//                    changeStopwatch(it.id, it.currentMs, true)
+//                }
+//            }
         }
     }
 

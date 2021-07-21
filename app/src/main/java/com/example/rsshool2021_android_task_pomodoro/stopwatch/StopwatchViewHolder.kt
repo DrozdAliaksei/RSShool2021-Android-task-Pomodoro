@@ -21,6 +21,7 @@ class StopwatchViewHolder(
     fun bind(stopwatch: Stopwatch) {
         binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
         binding.customView.setPeriod(stopwatch.startPeriod)
+        binding.customView.setCurrent(stopwatch.startPeriod - stopwatch.currentMs)
         if (stopwatch.isStarted) {
             startTimer(stopwatch)
         } else {
@@ -39,7 +40,12 @@ class StopwatchViewHolder(
             }
         }
 
-        binding.restartButton.setOnClickListener { listener.reset(stopwatch.id, stopwatch.startPeriod) }
+        binding.restartButton.setOnClickListener {
+            listener.reset(
+                stopwatch.id,
+                stopwatch.startPeriod
+            )
+        }
 
         binding.deleteButton.setOnClickListener { listener.delete(stopwatch.id) }
     }
@@ -47,6 +53,7 @@ class StopwatchViewHolder(
     private fun startTimer(stopwatch: Stopwatch) {
         val drawable = getDrawable(binding.root.context, R.drawable.ic_baseline_pause_24)
         binding.startPauseButton.setImageDrawable(drawable)
+        binding.timerContainer.background = getDrawable(binding.root.context,R.color.white)
 
         timer?.cancel()
         timer = getCountDownTimer(stopwatch)
@@ -67,17 +74,20 @@ class StopwatchViewHolder(
     }
 
     private fun getCountDownTimer(stopwatch: Stopwatch): CountDownTimer {
-        return object : CountDownTimer(stopwatch.startPeriod, UNIT_TEN_MS) {
-            val interval = UNIT_TEN_MS
-
+        return object : CountDownTimer(stopwatch.currentMs, UNIT_TEN_MS) {
             override fun onTick(millisUntilFinished: Long) {
-                stopwatch.currentMs -= interval
-                binding.customView.setCurrent(stopwatch.startPeriod - stopwatch.currentMs)
+                stopwatch.currentMs = millisUntilFinished
+                binding.customView.setCurrent(stopwatch.startPeriod - millisUntilFinished)
                 binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
             }
 
             override fun onFinish() {
-                binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
+//                binding.stopwatchTimer.text = stopwatch.startPeriod.displayTime()
+//                binding.customView.setCurrent(stopwatch.startPeriod)
+                binding.timerContainer.background = getDrawable(binding.root.context,R.color.red)
+                listener.stop(stopwatch.id,stopwatch.startPeriod)
+
+//                binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
             }
         }
     }
