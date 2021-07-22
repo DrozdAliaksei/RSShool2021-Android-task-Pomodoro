@@ -10,7 +10,11 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class ForegroundService : Service() {
 
@@ -48,15 +52,16 @@ class ForegroundService : Service() {
     private fun processCommand(intent: Intent?) {
         when (intent?.extras?.getString(COMMAND_ID) ?: INVALID) {
             COMMAND_START -> {
-                val startTime = intent?.extras?.getLong(STARTED_TIMER_TIME_MS) ?: return
-                commandStart(startTime)
+                val startTime = intent?.extras?.getLong(SYSTEM_TIME) ?: return
+                val runningTimer = intent.extras?.getLong(STARTED_TIMER_TIME_MS) ?: return
+                commandStart(startTime, runningTimer)
             }
             COMMAND_STOP -> commandStop()
             INVALID -> return
         }
     }
 
-    private fun commandStart(startTime: Long) {
+    private fun commandStart(startTime: Long, runningTimer: Long) {
         if (isServiceStarted) {
             return
         }
@@ -64,21 +69,29 @@ class ForegroundService : Service() {
         try {
             moveToStartedState()
             startForegroundAndShowNotification()
-            continueTimer(startTime)
+            continueTimer(startTime, runningTimer)
         } finally {
             isServiceStarted = true
         }
     }
 
-    private fun continueTimer(startTime: Long) {
+    private fun continueTimer(startTime: Long, runningTimer: Long) {
         job = GlobalScope.launch(Dispatchers.Main) {
             while (true) {
+                val interval = (System.currentTimeMillis() - startTime)
                 notificationManager?.notify(
                     NOTIFICATION_ID,
                     getNotification(
-                        (System.currentTimeMillis() - startTime).displayTime().dropLast(3)
+                        (runningTimer - interval).displayTime().dropLast(3)
                     )
                 )
+                if(runningTimer - interval == 0L){
+                    notificationManager?.notify(
+                        NOTIFICATION_ID,
+                        getNotification("Time is out")
+                        //.sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    )
+                }
                 delay(INTERVAL)
             }
         }
@@ -110,12 +123,11 @@ class ForegroundService : Service() {
 
     private fun startForegroundAndShowNotification() {
         createChannel()
-        val notification = getNotification("content")
+        val notification = getNotification("Timer")
         startForeground(NOTIFICATION_ID, notification)
     }
 
     private fun getNotification(content: String) = builder.setContentText(content).build()
-
 
     private fun createChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

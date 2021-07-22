@@ -45,6 +45,7 @@ class StopwatchViewHolder(
                 stopwatch.id,
                 stopwatch.startPeriod
             )
+            binding.timerContainer.background = getDrawable(binding.root.context,R.color.white)
         }
 
         binding.deleteButton.setOnClickListener { listener.delete(stopwatch.id) }

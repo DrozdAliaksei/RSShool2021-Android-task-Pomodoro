@@ -3,16 +3,18 @@ package com.example.rsshool2021_android_task_pomodoro
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rsshool2021_android_task_pomodoro.databinding.ActivityMainBinding
 import com.example.rsshool2021_android_task_pomodoro.stopwatch.Stopwatch
 import com.example.rsshool2021_android_task_pomodoro.stopwatch.StopwatchAdapter
 import com.example.rsshool2021_android_task_pomodoro.stopwatch.utils.StopwatchListener
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.*
 
 class MainActivity : AppCompatActivity(), StopwatchListener, LifecycleObserver {
@@ -22,7 +24,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, LifecycleObserver {
     private val stopwatchAdapter = StopwatchAdapter(this)
     private val stopwatches = mutableListOf<Stopwatch>()
     private var nextId = 0
-    private var startTime = 0L
+//    private var startTime = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +34,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, LifecycleObserver {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        startTime = System.currentTimeMillis()
+//        startTime = System.currentTimeMillis()
 
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
@@ -64,7 +66,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, LifecycleObserver {
             } else Toast.makeText(this, "Choose timer period", Toast.LENGTH_LONG).show()
         }
 
-        lifecycleScope.launch(Dispatchers.Main) {
+//        lifecycleScope.launch(Dispatchers.Main) {
 //            stopwatches.forEach {
 //                if (it.isStarted) {
 //                    val interval = System.currentTimeMillis() - startTime
@@ -72,7 +74,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, LifecycleObserver {
 //                    changeStopwatch(it.id, it.currentMs, true)
 //                }
 //            }
-        }
+//        }
     }
 
     override fun start(id: Int) {
@@ -122,16 +124,29 @@ class MainActivity : AppCompatActivity(), StopwatchListener, LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onAppBackgrounded() {
-        val startIntent = Intent(this, ForegroundService::class.java)
-        startIntent.putExtra(COMMAND_ID, COMMAND_START)
-        startIntent.putExtra(STARTED_TIMER_TIME_MS, startTime)
-        startService(startIntent)
+        val runningTimer = stopwatches.find { it.isStarted }?.let { stopwatches[it.id] }
+
+        if (runningTimer != null) {
+            val startIntent = Intent(this, ForegroundService::class.java)
+            startIntent.putExtra(COMMAND_ID, COMMAND_START)
+            startIntent.putExtra(
+                STARTED_TIMER_TIME_MS,
+                runningTimer.currentMs
+            ) //startTime runningTimer.currentMs
+            startIntent.putExtra(SYSTEM_TIME, System.currentTimeMillis())
+            startService(startIntent)
+        }
+
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onAppForegrounded() {
-        val stopIntent = Intent(this, ForegroundService::class.java)
-        stopIntent.putExtra(COMMAND_ID, COMMAND_STOP)
-        startService(stopIntent)
+        try {
+            val stopIntent = Intent(this, ForegroundService::class.java)
+            stopIntent.putExtra(COMMAND_ID, COMMAND_STOP)
+            startService(stopIntent)
+        } catch (ex: Exception){
+            Log.i("exception", ex.stackTraceToString())
+        }
     }
 }

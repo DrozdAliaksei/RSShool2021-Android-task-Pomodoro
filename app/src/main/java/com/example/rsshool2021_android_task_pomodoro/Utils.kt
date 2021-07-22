@@ -6,6 +6,7 @@ const val COMMAND_START = "COMMAND_START"
 const val COMMAND_STOP = "COMMAND_STOP"
 const val COMMAND_ID = "COMMAND_ID"
 const val STARTED_TIMER_TIME_MS = "STARTED_TIMER_TIME"
+const val SYSTEM_TIME = "SYSTEM_TIME"
 const val UNIT_TEN_MS = 10L
 
 fun Long.displayTime(): String {
