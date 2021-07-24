@@ -4,9 +4,9 @@ interface StopwatchListener {
 
     fun start(id: Int)
 
-    fun stop(id: Int, currentMs: Long)
+    fun stop(id: Int, currentMs: Long, isFinished: Boolean)
 
-    fun reset(id: Int, startPeriod: Long)
+    fun reset(id: Int, startPeriod: Long, isStarted: Boolean)
 
     fun delete(id: Int)
 }

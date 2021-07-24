@@ -13,7 +13,7 @@ import com.example.rsshool2021_android_task_pomodoro.stopwatch.utils.StopwatchLi
 
 class StopwatchViewHolder(
     private val binding: StopwatchItemBinding,
-    private val listener: StopwatchListener
+    private val listener: StopwatchListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private var timer: CountDownTimer? = null
@@ -24,9 +24,7 @@ class StopwatchViewHolder(
         binding.customView.setCurrent(stopwatch.startPeriod - stopwatch.currentMs)
         if (stopwatch.isStarted) {
             startTimer(stopwatch)
-        } else {
-            stopTimer(stopwatch)
-        }
+        } else stopTimer(stopwatch)
 
         initButtonsListeners(stopwatch)
     }
@@ -34,7 +32,7 @@ class StopwatchViewHolder(
     private fun initButtonsListeners(stopwatch: Stopwatch) {
         binding.startPauseButton.setOnClickListener {
             if (stopwatch.isStarted) {
-                listener.stop(stopwatch.id, stopwatch.currentMs)
+                listener.stop(stopwatch.id, stopwatch.currentMs, false)
             } else {
                 listener.start(stopwatch.id)
             }
@@ -43,18 +41,23 @@ class StopwatchViewHolder(
         binding.restartButton.setOnClickListener {
             listener.reset(
                 stopwatch.id,
-                stopwatch.startPeriod
+                stopwatch.startPeriod,
+                false
             )
-            binding.timerContainer.background = getDrawable(binding.root.context,R.color.white)
+            binding.timerContainer.background = getDrawable(binding.root.context, R.color.white)
         }
 
-        binding.deleteButton.setOnClickListener { listener.delete(stopwatch.id) }
+        binding.deleteButton.setOnClickListener {
+            binding.timerContainer.background =
+                getDrawable(binding.root.context, R.color.white) //bugfix - not good
+            listener.delete(stopwatch.id)
+        }
     }
 
     private fun startTimer(stopwatch: Stopwatch) {
         val drawable = getDrawable(binding.root.context, R.drawable.ic_baseline_pause_24)
         binding.startPauseButton.setImageDrawable(drawable)
-        binding.timerContainer.background = getDrawable(binding.root.context,R.color.white)
+        binding.timerContainer.background = getDrawable(binding.root.context, R.color.white)
 
         timer?.cancel()
         timer = getCountDownTimer(stopwatch)
@@ -83,12 +86,8 @@ class StopwatchViewHolder(
             }
 
             override fun onFinish() {
-//                binding.stopwatchTimer.text = stopwatch.startPeriod.displayTime()
-//                binding.customView.setCurrent(stopwatch.startPeriod)
-                binding.timerContainer.background = getDrawable(binding.root.context,R.color.red)
-                listener.stop(stopwatch.id,stopwatch.startPeriod)
-
-//                binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
+                binding.timerContainer.background = getDrawable(binding.root.context, R.color.red)
+                listener.stop(stopwatch.id, stopwatch.startPeriod, true)
             }
         }
     }

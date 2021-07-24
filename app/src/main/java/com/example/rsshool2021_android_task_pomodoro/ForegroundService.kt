@@ -79,19 +79,16 @@ class ForegroundService : Service() {
         job = GlobalScope.launch(Dispatchers.Main) {
             while (true) {
                 val interval = (System.currentTimeMillis() - startTime)
+                val notifyMsg =
+                    if ((runningTimer - interval) > 0L) (runningTimer - interval).displayTime()
+                        .dropLast(3) else "Time is out"
                 notificationManager?.notify(
                     NOTIFICATION_ID,
                     getNotification(
-                        (runningTimer - interval).displayTime().dropLast(3)
+                        //(runningTimer - interval).displayTime().dropLast(3)
+                        notifyMsg
                     )
                 )
-                if(runningTimer - interval == 0L){
-                    notificationManager?.notify(
-                        NOTIFICATION_ID,
-                        getNotification("Time is out")
-                        //.sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                    )
-                }
                 delay(INTERVAL)
             }
         }

@@ -72,6 +72,7 @@
             android:background="@color/cardview_light_background"
             android:contentDescription="@string/restart_button"
             android:padding="8dp"
+            android:visibility="gone"
             android:src="@drawable/ic_baseline_refresh_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/delete_button"
